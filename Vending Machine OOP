@@ -1,0 +1,102 @@
+# Design a vending machine.
+
+# Use case list:
+
+# select item and get price
+# accept bills/coins
+# dispense items purchased and return change
+# refund when cancelling the request
+
+# Possible exceptions:
+
+# Sold out
+# Not fully paid
+# Not enough changes
+
+class item:
+    def __init__(self, name, price):
+        self.name = str(name)
+        self.price = float(price)
+        print("Initializing " + self.name + " price " + str(self.price))
+    def getName(self):
+        return self.name
+    def getPrice(self):
+        return self.price
+
+class coke(item):
+    def __init__(self):
+        super().__init__("Coke", 1.50)
+
+class chips(item):
+    def __init__(self):
+        super().__init__("Chips", 2.00)
+
+class twix(item):
+    def __init__(self):
+        super().__init__("Twix", 1.00)
+
+
+class coin:
+    i = 0 # imlplement later
+
+class inventory:
+    def __init__(self):
+        self.inv = {} # initialize an empty dictionary of items
+
+    def addItem(self, item, amt):
+        self.inv[item.getName()] += amt
+        return True
+
+    def deductItem(self, item, amt):
+        self.inv[item.getName()] -= amt
+        return True
+
+    def load(self, item, amt):
+        self.inv[item.getName()] = amt
+        return True
+
+    def invLevels(self):
+        print("Inventory level is: " + str(self.inv))
+        return self.inv
+
+    def checkInv(self, item):
+        print("There are " + str(self.inv[item.getName()]) + " units of " + item.getName() + " left")
+        return self.inv[item.getName()]
+
+class vendingMachine:
+
+    def __init__(self):
+        print("Machine created")
+        self.inv = inventory()
+
+    def interface(self):
+        while True:
+            print("Welcome to the vending machine " + str(self) + "\n**************************\nWhat would you like to do?")
+            print("e for exit")
+            entry =  input()
+            if entry == 'e':
+                break
+
+    def loadItems(self, all_items): # takes a dictionary of items, made up of item name and value to load, to load
+        for item in all_items:
+            self.inv.load(item[0], item[1]) # load the item and its quantity into the inventory function
+
+
+def main():
+
+    machine1 = vendingMachine() # using a vending machine object so we can have multiple vending machines
+
+    coke1 = coke() # coke in the first machine, machine1
+    chips1 = chips()
+    twix1 = twix() # what's the best way to initialize and keep track of quantity of items(# of chips, cokes, etc) in the item class?
+
+    print("my product is: " + coke1.getName()) # testing if the class works
+    initialInv = [[coke1, 5], [chips1, 10], [twix1, 8]] #initialize the machine1 inventory with a dictionary
+    print(initialInv)
+
+    machine1.loadItems(initialInv)
+    machine1.inv.invLevels()
+    machine1.inv.checkInv(coke1)
+
+if __name__ == '__main__':
+    main()
