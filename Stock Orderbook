@@ -1,0 +1,80 @@
+from collections import deque
+from heapq import *
+
+class orderBook:
+    # 1. Should be able to preload book with buys and sells
+    # 2. Given a buy for a price, return if it was filled or not. Also return the amount of profit
+        # if there is a match, remove both. Return filled and profit. If not, heapify the input
+    # 3. Given sell for a price, return if it was filled or not. Also return the amount of profit
+            # if there is a match, remove both. Return filled and profit. If not, heapify the input
+    # 4. Limit orders. Keep track of the time the order was placed, and its expiry
+        # if there is a candidate buy/sell, check if the buy time is still valid. if not, then remove it, and repeat
+    buys = []
+    sells = []
+    totalFilled = 0
+    profit = 0
+
+    def printInfo(self):
+        print("Buys are: " + str(self.buys))
+        print("Sells are: " + str(self.sells) + "\n")
+
+    def preLoad(self, preBuys, preSells): # take in a set of buys and sells to preload
+        for i in range(len(preBuys)): # use a negative heap to keep the max at the top
+            heappush(self.buys, -1 * preBuys[i])
+        for i in range(len(preSells)): # use a negative heap to keep the max at the top
+            heappush(self.sells, preSells[i])
+
+    def purchase(self, buyOrder):
+
+        if buyOrder >= self.sells[0]: # if our buy order has a valid match
+            foundSale = heappop(self.sells)
+            tradeprofit = buyOrder - foundSale
+            print("BUY order for: $" + str(buyOrder) + " is matched to sell order: $" + str(foundSale) + ". Profit is: $" + str(tradeprofit))
+            self.profit += tradeprofit
+            self.totalFilled += 1
+            return True
+
+        else: # else, add it to the queue
+            print("No sale for buy order: $" + str(buyOrder) )
+            heappush(self.buys, -1 * buyOrder)
+            return False
+
+    def sell(self, sellOrder):
+
+        if sellOrder <= -1 * self.buys[0]: # if our sell order has a valid match
+            foundBuy = -1 * heappop(self.buys)
+            tradeprofit = foundBuy - sellOrder
+            print("SALE order for: $" + str(sellOrder) + " is matched to buy order: $" + str(foundBuy) + ". Profit is: $" + str(tradeprofit))
+            self.profit += tradeprofit
+            self.totalFilled += 1
+            return True
+
+        else: # else, add it to the queue
+            print("No sale for sell order: $" + str(sellOrder))
+            heappush(self.sells, sellOrder)
+            return False
+
+    def marketCheck(self):
+        print("Total profit of this market is: $" + str(self.profit) + " from " + str(self.totalFilled) + " trades. \n")
+        return self.profit
+        
+def main():
+    
+    GOOG = orderBook()
+
+    buys = [100,100,90,96,98]
+    sells = [109,70,160,120,90]
+
+    GOOG.preLoad(buys, sells)
+    GOOG.printInfo()
+
+    GOOG.purchase(50)
+    GOOG.purchase(120)
+
+    GOOG.marketCheck()
+    GOOG.printInfo()
+
+    
+
+if __name__ == '__main__':
+    main()
